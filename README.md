@@ -2,11 +2,8 @@
 BalPlayground is a Simple CRUD application which doing the basic functionalities of Library Management System. You need Postman/Thunderbolt to communicate with the application
 
 ## Balerina
-Balerina is a Open source, cloud-native programming language optimized for integration
-Batteries included: Rich ecosystem of network protocols, data formats, and connectors
-Edit/view source code textually or graphically as sequence diagrams and flowcharts
-Built-in, easy and efficient concurrency with sequence diagrams and safety primitives
-Developed by WSO2 since 2016 and first released in February 2022
+Ballerina is an open source, cloud-native programming language optimized for integration. It comes with a rich ecosystem of network protocols, data formats, and connectors, and allows you to edit and view source code textually or graphically as sequence diagrams and flowcharts. Ballerina also has built-in, easy, and efficient concurrency support with sequence diagrams and safety primitives. It was developed by WSO2 since 2016 and first released in February 2022.
+For further details visit: https://ballerina.io
 
 ## Usage
 To use BalPlayground, you'll need to have Ballerina installed on your machine. Once you have Ballerina installed, you can run the following commands to build and run the server:
