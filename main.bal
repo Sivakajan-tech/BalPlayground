@@ -1,5 +1,4 @@
 import ballerina/http;
-import ballerina/io;
 
 service / on new http:Listener(9090) {
 
@@ -25,34 +24,19 @@ service / on new http:Listener(9090) {
         return borrowings.toArray();
     }
 
-    resource function post borrowings(string member_id,string book_id) returns Borrwing{
-        string dateBorrowed = "2019-03-01";
-        Borrwing borrowing = {
-            id: "borrowing_" .'join((borrowings.length() + 1).toString()),
-            memberId: member_id,
-            bookId: book_id,
-            dateBorrowed: dateBorrowed,
-            dateReturned: ""
-        };   
-        borrow(book_id, member_id);
-        return borrowing;     
+    resource function post borrowings(string member_id,string book_id){
+        borrow(book_id = book_id, member_id = member_id); // Update both books and borrowings tables.
+    }
+    resource function post borrowings/[string iso_code](string borrow_id, int rating, string comment){
+         bookReturn(borrow_id = borrow_id,rating = rating,comment = comment);  // Update both books and borrowings tables.
     }
 
     resource function get reviews() returns Review[] {
         return reviews.toArray();
     }
 
-    resource function post reviews(string book_id, string member_id, int rating, string comment) returns Review {
-        Review review = {
-            id: "review_" .'join((reviews.length() + 1).toString()),
-            rating: rating,
-            bookId: book_id,
-            memberId: member_id,
-            comment: comment
-        };
-        reviews.add(review);
-        io:println("Review added successfully");
-        return review;
+    resource function post reviews(string book_id, string member_id, int rating, string comment){
+        addReview(book_id= book_id, member_id = member_id, rating = rating, comment = comment);
     }
 }
 
@@ -73,6 +57,16 @@ service / on new http:Listener(9090) {
         borrow(book_id = "book_5", member_id = "member_1"); // Book 5 is not availbale
 
         // No - 3 =====================================================
-        // http://localhost:9090/borrowings?member_id=member_5&book_id=book_10
+        // We can manually borrow/ return books using POSTMAN/ CURL
+        // POSTMAN
+
+        // Borrow Book
+        // POST http://localhost:9090/borrowings?member_id={member_id}&book_id={book_id} 
+
+        // Return Book
+        // POST http://localhost:9090/borrowings?borrow_id={borrowing_id}&rating={rating}&comment={comment}
+
+        // Add Review
+        // POST http://localhost:9090/reviews?book_id={book_id}&member_id={member_id}&rating={rating}&comment={comment}
 
     }
