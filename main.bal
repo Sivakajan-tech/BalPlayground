@@ -1,76 +1,6 @@
 import ballerina/http;
 import ballerina/io;
 
-function updateBookAvailable(string book_id, boolean available = true){
-    boolean _check = false;
-    foreach Book _book in books {
-        if(_book.id == book_id) {
-            _book.available = available;
-            _check = true;
-        }
-    }
-    if(!_check) {
-        io:println("Error: Book not found");
-    }
-}
-
-function borrow(string book_id, string member_id) {
-    string dateBorrowed = "2019-03-01";
-    if(!books.get(book_id).available) {
-        io:println("Error: Book already taken. Not available ATM");
-        return;
-    }
-    updateBookAvailable(book_id,false);
-    Borrwing borrowing = {
-        id: "borrowing_" .'join((borrowings.length() + 1).toString()),
-        memberId: member_id,
-        bookId: book_id,
-        dateBorrowed: dateBorrowed,
-        dateReturned: ""
-    };
-    borrowings.add(borrowing);  
-    io:println("Book borrowed successfully");
-};
-
-function bookReturn(string borrow_id, int rating, string comment) {
-    string dateReturned = "2019-04-01";
-    boolean _check = false;
-    string book_id = "";
-    string member_id = "";
-    foreach Borrwing _borrow in borrowings {
-        if(_borrow.id == borrow_id) {
-            _borrow.dateReturned = dateReturned;
-            book_id = _borrow.bookId;
-            member_id = _borrow.memberId;
-            _check = true;
-        }
-    }
-    if(!_check) {
-        io:println("Error: Book not found");
-    }
-    io:println("Book returned successfully");
-
-    updateBookAvailable(book_id);
-
-    addReview(book_id= book_id, member_id = member_id, rating = rating, comment = comment);
-}
-
-function addReview(string book_id, string member_id, int rating, string comment) {
-    if rating==0 {
-        io:println("Error: Rating cannot be 0");
-        return;
-    }
-    Review review = {
-        id: "review_" .'join((reviews.length() + 1).toString()),
-        rating: rating,
-        bookId: book_id,
-        memberId: member_id,
-        comment: comment
-    };
-    reviews.add(review);
-    io:println("Review added successfully");
-}
-
 service / on new http:Listener(9090) {
 
     resource function get books() returns Book[] {
@@ -95,8 +25,34 @@ service / on new http:Listener(9090) {
         return borrowings.toArray();
     }
 
+    resource function post borrowings(string member_id,string book_id) returns Borrwing{
+        string dateBorrowed = "2019-03-01";
+        Borrwing borrowing = {
+            id: "borrowing_" .'join((borrowings.length() + 1).toString()),
+            memberId: member_id,
+            bookId: book_id,
+            dateBorrowed: dateBorrowed,
+            dateReturned: ""
+        };   
+        borrow(book_id, member_id);
+        return borrowing;     
+    }
+
     resource function get reviews() returns Review[] {
         return reviews.toArray();
+    }
+
+    resource function post reviews(string book_id, string member_id, int rating, string comment) returns Review {
+        Review review = {
+            id: "review_" .'join((reviews.length() + 1).toString()),
+            rating: rating,
+            bookId: book_id,
+            memberId: member_id,
+            comment: comment
+        };
+        reviews.add(review);
+        io:println("Review added successfully");
+        return review;
     }
 }
 
@@ -117,5 +73,6 @@ service / on new http:Listener(9090) {
         borrow(book_id = "book_5", member_id = "member_1"); // Book 5 is not availbale
 
         // No - 3 =====================================================
+        // http://localhost:9090/borrowings?member_id=member_5&book_id=book_10
 
     }
